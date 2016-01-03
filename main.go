@@ -1,12 +1,11 @@
 package main
 
 import (
-	_ "goWebApp/routers"
-	"github.com/astaxie/beego"
+	"./common"
 )
 
 func main() {
-
+	common.Run();
 }
 
 
