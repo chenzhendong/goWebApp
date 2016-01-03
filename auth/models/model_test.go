@@ -6,7 +6,7 @@ import (
 	"github.com/astaxie/beego"
 )
 
-func init()  {
+func setup()  {
 	beego.AppConfig.Set("dbhost", "localhost")
 	beego.AppConfig.Set("dbport", "5432")
 	beego.AppConfig.Set("dbuser", "nodeframe")
@@ -14,7 +14,8 @@ func init()  {
 	beego.AppConfig.Set("dbname", "nodeframe")
 }
 
-func TestMain(m *testing.M)  {
+func TestOrm(t *testing.T)  {
+	setup()
 	o := orm.NewOrm()
 	userLogin := UserLogin{Email: "abc@test.com"}
 	id, err := o.Insert(&userLogin)

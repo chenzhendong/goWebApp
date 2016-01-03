@@ -3,12 +3,12 @@ package models
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 	"log"
 )
 
 
-func Init() {
+func init() {
 	log.Println("Hello")
 	dbhost := beego.AppConfig.String("dbhost")
 	dbport := beego.AppConfig.String("dbport")
@@ -19,7 +19,7 @@ func Init() {
 		dbport = "5432"
 	}
 	orm.RegisterDataBase("default", "postgres", "host=" + dbhost + " user=" + dbuser + " password='" + dbpassword + "' dbname=" + dbname + " port=" + dbport + " sslmode=disable")
-	orm.RegisterModel(new(UserLogin))
+	orm.RegisterModel(new(UserLogin), new(UserProfile), new(Address), new(Session))
 	orm.RunSyncdb("default", true, true)
 }
 
