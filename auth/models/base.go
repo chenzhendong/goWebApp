@@ -6,7 +6,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-
 func init() {
 	dbhost := beego.AppConfig.String("dbhost")
 	dbport := beego.AppConfig.String("dbport")
