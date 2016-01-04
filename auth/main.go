@@ -1,8 +1,8 @@
 package main
 
 import (
-	_ "goWebApp/auth/docs"
-	_ "goWebApp/auth/routers"
+	_ "goWebApp/sample/docs"
+	_ "goWebApp/sample/routers"
 
 	"github.com/astaxie/beego"
 )
