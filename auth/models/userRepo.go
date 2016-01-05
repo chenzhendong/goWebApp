@@ -1,16 +1,15 @@
 package models
 import (
 	"github.com/astaxie/beego/orm"
-	"github.com/satori/go.uuid"
+	"fmt"
 )
 
-var UserRepo = make(map[string]*UserLogin)
+type UserRepo struct {
+	Collection []*UserLogin
+}
 
-func New() (string, *UserLogin, error) {
-	uuid := uuid.NewV4()
+func (userRepo *UserRepo) New() *UserLogin {
 	newUserRef := new(UserLogin)
-	UserRepo[uuid] = newUserRef
-
 	mailingAddrRef := new(Address)
 	billingAddrRef := new(Address)
 	profileRef := new(UserProfile)
@@ -19,22 +18,39 @@ func New() (string, *UserLogin, error) {
 	profileRef.MailingAddress = mailingAddrRef
 
 	newUserRef.Profile = profileRef
+	userRepo.Collection = append(userRepo.Collection, newUserRef)
 
-	return uuid.String(), newUserRef
+	return newUserRef
 }
 
-func Get(uuid string) (*UserLogin) {
-	return UserRepo[uuid]
+func (userRepo *UserRepo) LoadChildren() error {
+	for _, userRef := range userRepo.Collection {
+		if (userRef.Id > 0) {
+			profileRef := userRef.Profile
+			mailingAddrRef := profileRef.MailingAddress
+			billingAddrRef := profileRef.BillingAddress
+			if err := profileRef.Read(); err != nil {
+				return err
+			}
+			if err := mailingAddrRef.Read(); err != nil {
+				return err
+			}
+			if err := billingAddrRef.Read(); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
-func Persist() error {
+func (userRepo *UserRepo) Save() error {
 
-	for _, userRef := range UserRepo {
+	for _, userRef := range userRepo.Collection {
 		profileRef := userRef.Profile
 		mailingAddrRef := profileRef.MailingAddress
 		billingAddrRef := profileRef.BillingAddress
 
-		if(userRef.Id <= 0){
+		if (userRef.Id <= 0) {
 			o := orm.NewOrm()
 			err := o.Begin()
 			if err != nil {
@@ -63,7 +79,31 @@ func Persist() error {
 			if err != nil {
 				return err
 			}
-
+			if mailingAddrRef.IsChanged {
+				if err = mailingAddrRef.Update(o); err != nil {
+					o.Rollback()
+					return err
+				}
+			}
+			if billingAddrRef.IsChanged {
+				if err = billingAddrRef.Update(o); err != nil {
+					o.Rollback()
+					return err
+				}
+			}
+			if profileRef.IsChanged {
+				if err = profileRef.Update(o); err != nil {
+					o.Rollback()
+					return err
+				}
+			}
+			if userRef.IsChanged {
+				if err = userRef.Update(o); err != nil {
+					o.Rollback()
+					return err
+				}
+			}
+			o.Commit()
 		}
 	}
 	return nil
