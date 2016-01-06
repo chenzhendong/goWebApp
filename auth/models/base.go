@@ -21,6 +21,3 @@ func init() {
 	//orm.Debug = true
 }
 
-
-
-

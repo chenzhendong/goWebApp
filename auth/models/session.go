@@ -35,8 +35,10 @@ func (m *Session) Read(fields ...string) error {
 func (m *Session) Update(o orm.Ormer, fields ...string) error {
 	if _, err := o.Update(m, fields...); err != nil {
 		return err
+	}else {
+		o.Read(m)
+		return nil
 	}
-	return nil
 }
 
 func (m *Session) Delete(o orm.Ormer) error {

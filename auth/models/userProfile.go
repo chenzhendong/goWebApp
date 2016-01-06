@@ -41,8 +41,10 @@ func (m *UserProfile) Read(fields ...string) error {
 func (m *UserProfile) Update(o orm.Ormer, fields ...string) error {
 	if _, err := o.Update(m, fields...); err != nil {
 		return err
+	}else {
+		o.Read(m)
+		return nil
 	}
-	return nil
 }
 
 func (m *UserProfile) Delete(o orm.Ormer) error {

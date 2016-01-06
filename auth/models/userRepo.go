@@ -23,35 +23,15 @@ func (userRepo *UserRepo) New() *UserLogin {
 	return newUserRef
 }
 
-func (userRepo *UserRepo) LoadChildren() error {
-	for _, userRef := range userRepo.Collection {
-		if (userRef.Id > 0) {
-			profileRef := userRef.Profile
-			mailingAddrRef := profileRef.MailingAddress
-			billingAddrRef := profileRef.BillingAddress
-			fmt.Println(profileRef)
-			fmt.Println(mailingAddrRef)
-			fmt.Println(billingAddrRef)
-			if err := profileRef.Read(); err != nil {
-				return err
-			}
-			if err := mailingAddrRef.Read(); err != nil {
-				return err
-			}
-			if err := billingAddrRef.Read(); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
-}
-
 func (userRepo *UserRepo) Save() error {
 
 	for _, userRef := range userRepo.Collection {
 		profileRef := userRef.Profile
 		mailingAddrRef := profileRef.MailingAddress
 		billingAddrRef := profileRef.BillingAddress
+
+		fmt.Println(profileRef)
+		fmt.Println(mailingAddrRef)
 
 		if (userRef.Id <= 0) {
 			o := orm.NewOrm()
@@ -75,9 +55,6 @@ func (userRepo *UserRepo) Save() error {
 				o.Rollback()
 				return err
 			}
-			profileRef.BillingAddress = billingAddrRef
-			profileRef.MailingAddress = mailingAddrRef
-			userRef.Profile = profileRef
 			o.Commit()
 		} else if userRef.IsChanged || profileRef.IsChanged || mailingAddrRef.IsChanged || billingAddrRef.IsChanged {
 			o := orm.NewOrm()
@@ -111,6 +88,12 @@ func (userRepo *UserRepo) Save() error {
 			}
 			o.Commit()
 		}
+		fmt.Println(profileRef)
+		fmt.Println(mailingAddrRef)
+		fmt.Println(billingAddrRef)
+		profileRef.BillingAddress = billingAddrRef
+		profileRef.MailingAddress = mailingAddrRef
+		userRef.Profile = profileRef
 	}
 	return nil
 }

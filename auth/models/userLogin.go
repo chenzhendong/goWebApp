@@ -47,8 +47,10 @@ func (m *UserLogin) Read(fields ...string) error {
 func (m *UserLogin) Update(o orm.Ormer, fields ...string) error {
 	if _, err := o.Update(m, fields...); err != nil {
 		return err
+	}else {
+		o.Read(m)
+		return nil
 	}
-	return nil
 }
 
 func (m *UserLogin) Delete(o orm.Ormer) error {

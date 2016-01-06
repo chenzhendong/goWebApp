@@ -48,8 +48,10 @@ func (m *Address) Read(fields ...string) error {
 func (m *Address) Update(o orm.Ormer, fields ...string) error {
 	if _, err := o.Update(m, fields...); err != nil {
 		return err
+	}else {
+		o.Read(m)
+		return nil
 	}
-	return nil
 }
 
 func (m *Address) Delete(o orm.Ormer) error {
