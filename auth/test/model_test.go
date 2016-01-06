@@ -3,14 +3,18 @@ import (
 	"testing"
 	. "github.com/smartystreets/goconvey/convey"
 	"goWebApp/auth/models"
+	"fmt"
 )
 
 func TestUserRepo(t *testing.T) {
-	userRepo := new(models.UserRepo)
-	userRef := userRepo.New()
+	fmt.Println("Start testing ....")
+	userRepo := models.NewUserRepo()
+	userRef := userRepo.NewEntry()
 	userRef.Email = "abc@mail.com"
-	userRef.Profile.BillingAddress.Attn = "Billing"
-	userRef.Profile.MailingAddress.Attn = "Mailing"
+	mailingAddress := models.Address{AddressType: models.MAILING_ADDRESS}
+	billingAddress := models.Address{AddressType: models.BILLING_ADDRESS}
+	userRef.Profile.Addresses = append(userRef.Profile.Addresses, &mailingAddress)
+	userRef.Profile.Addresses = append(userRef.Profile.Addresses, &billingAddress)
 	err := userRepo.Save()
 
 	Convey("Subject: Test Insert User Login\n", t, func() {
@@ -23,21 +27,18 @@ func TestUserRepo(t *testing.T) {
 	})
 
 
-	userRef.Profile.FirstName = "John"
-	userRef.Profile.LastName = "Smith"
-	userRef.IsChanged = true
-	userRef.Profile.BillingAddress.AddressLine1 = "123 main st"
-	userRef.Profile.BillingAddress.IsChanged = true
-
-	userRepo.Save()
+	userRepo = models.NewUserRepo()
+	qb := userRepo.QueryBuilder()
+	userRepo.Get(qb)
+	/*userRepo.Save()
 
 	Convey("Subject: Test Read User with Profile\n", t, func() {
 		Convey("Profil ID return Should Larger than 0", func() {
-			So(userRef.Profile.BillingAddress.AddressLine1, ShouldEqual, "123 main st")
+			So(userRef.Profile.Addresses[0].AddressLine1, ShouldEqual, "123 main st")
 		})
 		Convey("The Error Should be Nil", func() {
 			So(err, ShouldBeNil)
 		})
-	})
+	})*/
 }
 

@@ -16,14 +16,14 @@ const(
 type UserLogin struct {
 	Id int64 `json:"id"`
 	Email string `orm:"unique" json:"email"`
-	UseName string `orm:"unique;null"`
-	MobilePhone string `orm:"unique;null" json:"mobile"`
-	Password string `json:"password"`
-	Status UserStatus `json:"status"`
+	UseName string `orm:"null;unique"`
+	MobilePhone string `orm:"null;unique" json:"mobile"`
+	Password string `orm:"null" json:"password"`
+	Status UserStatus `json:"status;default(0)"`
 	CreatedAt time.Time `orm:"auto_now_add;type(datetime)" json:"createdAt"`
 	UpdatedAt time.Time `orm:"auto_now;type(datetime)" json:"updatedAt"`
-	Profile *UserProfile `orm:"null;rel(one)"`
-	Sessions []*Session `orm:"reverse(many)"`
+	ProfileId int64 `orm:"null"`
+	Profile *UserProfile `orm:"-"`
 	IsChanged bool `orm:"-"`
 }
 

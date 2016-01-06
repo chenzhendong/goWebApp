@@ -6,17 +6,16 @@ import (
 
 type UserProfile struct {
 	Id int64 `json:"id"`
-	MailingAddress *Address `orm:"null;rel(one)" json:"mailingAddress"`
-	BillingAddress *Address `orm:"null;rel(one)" json:"billingAddress"`
+	Addresses []*Address `orm:"-" json:"addresses"`
 	FirstName string `orm:"null" json:"firstName"`
 	LastName string `orm:"null" json:"lastName"`
 	MiddleName string `orm:"null" json:"middleName"`
 	BirthDate time.Time `orm:"null;type(date)" json:"birthDate"`
-	HomePhone string `orm:"null" json:"homePhone"`
-	WorkPhone string `orm:"null" json:"workPhone"`
+	Phone string `orm:"null" json:"phone"`
 	CreatedAt time.Time `orm:"auto_now_add;type(datetime)" json:"createdAt"`
 	UpdateAt time.Time `orm:"auto_now;type(datetime)" json:"updatedAt"`
-	UserLogin *UserLogin `orm:"reverse(one)"`
+	UserLoginId int64 `orm:"null"`
+	UserLogin *UserLogin `orm:"-"`
 	IsChanged bool `orm:"-"`
 }
 

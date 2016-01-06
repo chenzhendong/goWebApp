@@ -11,7 +11,6 @@ type Session struct {
 	ValidThrough time.Time `json:"validThrough"`
 	CreatedAt time.Time `orm:"auto_now_add;type(datetime)" json:"createdAt"`
 	UpdateAt time.Time `orm:"auto_now;type(datetime)" json:"updatedAt"`
-	UserLogin *UserLogin `orm:"rel(fk)" json:"userLogin"`
 }
 
 

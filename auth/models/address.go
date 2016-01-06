@@ -24,7 +24,7 @@ type Address struct {
 	AddressType AddressType `orm:"default(0)" json:"addressType"`
 	CreatedAt time.Time `orm:"auto_now_add;type(datetime)" json:"createdAt"`
 	UpdateAt time.Time `orm:"auto_now;type(datetime)" json:"updatedAt"`
-	UserProfile *UserProfile  `orm:"reverse(one)" json:"userProfile"`
+	ProfileId int64 `orm:"null"`
 	IsChanged bool `orm:"-"`
 }
 
