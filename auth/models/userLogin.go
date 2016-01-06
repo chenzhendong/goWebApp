@@ -28,10 +28,13 @@ type UserLogin struct {
 }
 
 func (m *UserLogin) Insert(o orm.Ormer) error {
-	if _, err := o.Insert(m); err != nil {
+	if id, err := o.Insert(m); err != nil {
 		return err
+	}else {
+		m.Id = id
+		o.Read(m)
+		return nil
 	}
-	return nil
 }
 
 func (m *UserLogin) Read(fields ...string) error {

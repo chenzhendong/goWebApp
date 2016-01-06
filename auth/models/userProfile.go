@@ -22,10 +22,13 @@ type UserProfile struct {
 
 
 func (m *UserProfile) Insert(o orm.Ormer) error {
-	if _, err := o.Insert(m); err != nil {
+	if id, err := o.Insert(m); err != nil {
 		return err
+	}else {
+		m.Id = id
+		o.Read(m)
+		return nil
 	}
-	return nil
 }
 
 func (m *UserProfile) Read(fields ...string) error {

@@ -10,9 +10,9 @@ func TestUserRepo(t *testing.T) {
 	userRepo := new(models.UserRepo)
 	userRef := userRepo.New()
 	userRef.Email = "abc@mail.com"
-	userRepo.Save()
+	err := userRepo.Save()
 
-	err := userRef.Read()
+	fmt.Println(userRepo.Collection[0])
 
 	Convey("Subject: Test Insert User Login\n", t, func() {
 		Convey("User ID return Should Larger than 0", func() {
@@ -23,10 +23,9 @@ func TestUserRepo(t *testing.T) {
 		})
 	})
 
-	userRepo.Collection = append(userRepo.Collection, userRef)
 	err = userRepo.LoadChildren()
 
-	fmt.Println(userRef.Profile)
+
 
 	Convey("Subject: Test Read User with Profile\n", t, func() {
 		Convey("Profil ID return Should Larger than 0", func() {

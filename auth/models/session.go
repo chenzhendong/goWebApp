@@ -16,10 +16,13 @@ type Session struct {
 
 
 func (m *Session) Insert(o orm.Ormer) error {
-	if _, err := o.Insert(m); err != nil {
+	if id, err := o.Insert(m); err != nil {
 		return err
+	}else {
+		m.Id = id
+		o.Read(m)
+		return nil
 	}
-	return nil
 }
 
 func (m *Session) Read(fields ...string) error {
