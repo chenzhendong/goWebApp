@@ -21,7 +21,7 @@ func init() {
 	orm.RegisterDataBase("default", "postgres", "host=" + dbhost + " user=" + dbuser + " password='" + dbpassword + "' dbname=" + dbname + " port=" + dbport + " sslmode=disable")
 	orm.RegisterModel(new(UserLogin), new(UserProfile), new(Address), new(Session))
 	orm.RunSyncdb("default", true, true)
-	orm.Debug = true
+	//orm.Debug = true
 	Log = logs.NewLogger(1000)
 }
 

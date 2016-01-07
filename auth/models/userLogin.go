@@ -22,7 +22,6 @@ type UserLogin struct {
 	Status UserStatus `json:"status;default(0)"`
 	CreatedAt time.Time `orm:"auto_now_add;type(datetime)" json:"createdAt"`
 	UpdatedAt time.Time `orm:"auto_now;type(datetime)" json:"updatedAt"`
-	ProfileId int64 `orm:"null"`
 	Profile *UserProfile `orm:"-"`
 	IsChanged bool `orm:"-"`
 }
