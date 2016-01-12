@@ -1,27 +1,35 @@
 package models
 
 import (
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
+	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
-	"github.com/astaxie/beego/logs"
 )
 
-var Log *logs.BeeLogger
+var DB gorm.DB
 
 func init() {
-	dbhost := beego.AppConfig.String("dbhost")
-	dbport := beego.AppConfig.String("dbport")
-	dbuser := beego.AppConfig.String("dbuser")
-	dbpassword := beego.AppConfig.String("dbpassword")
-	dbname := beego.AppConfig.String("dbname")
+	dbhost := "localhost"
+	dbport := "5432"
+	dbuser := "nodeframe"
+	dbpassword := "nodeframe"
+	dbname := "nodeframe"
 	if dbport == "" {
 		dbport = "5432"
 	}
-	orm.RegisterDataBase("default", "postgres", "host=" + dbhost + " user=" + dbuser + " password='" + dbpassword + "' dbname=" + dbname + " port=" + dbport + " sslmode=disable")
-	orm.RegisterModel(new(UserLogin), new(UserProfile), new(Address), new(Session))
-	orm.RunSyncdb("default", true, true)
-	//orm.Debug = true
-	Log = logs.NewLogger(1000)
+
+	db, err := gorm.Open("postgres", "postgres", "host=" + dbhost + " user=" + dbuser + " password='" + dbpassword + "' dbname=" + dbname + " port=" + dbport + " sslmode=disable")
+	if err != nil {
+
+	}
+	
+	db.DB().SetMaxIdleConns(10)
+	db.DB().SetMaxOpenConns(100)
+	db.SingularTable(true)
+
+	db.DropTableIfExists(&UserLogin{}, &UserProfile{}, &Address{})
+	db.CreateTable(&UserLogin{}, &UserProfile{}, &Address{})
+	db.LogMode(true)
+
+	DB = db
 }
 

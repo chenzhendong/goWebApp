@@ -1,10 +1,11 @@
 package models
 import (
-	"github.com/astaxie/beego/orm"
-	"fmt"
+
 )
 
-type UserRepo struct {
+
+
+/*type UserRepo struct {
 	NewEntries   []*UserLogin
 	QueryEntries map[int64]*UserLogin
 }
@@ -141,5 +142,5 @@ func (userRepo *UserRepo) Save() error {
 	}
 
 	return nil
-}
+}*/
 

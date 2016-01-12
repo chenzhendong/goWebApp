@@ -7,7 +7,20 @@ import (
 )
 
 func TestUserRepo(t *testing.T) {
-	fmt.Println("Start testing ....")
+
+	db := models.DB
+
+	user := models.UserLogin{Email:"abc@mail.com", Profile: models.UserProfile{FirstName: "John", Addresses: []models.Address{{AddressLine1: "123 main st"},{AddressLine1: "456 wall st"}}}}
+	db.Create(&user)
+	fmt.Println(user)
+
+	Convey("Subject: Test Insert User\n", t, func() {
+		Convey("User ID return Should Larger than 0", func() {
+			So(user.ID, ShouldBeGreaterThan, 0)
+		})
+	})
+
+	/*fmt.Println("Start testing ....")
 	userRepo := models.NewUserRepo()
 	userRef := userRepo.NewEntry()
 	userRef.Email = "abc@mail.com"
@@ -56,7 +69,6 @@ func TestUserRepo(t *testing.T) {
 
 
 	userRef.Email = "abc1@mail.com"
-	userRef.IsChanged = true
 	userRef.Profile.FirstName = "John1"
 	userRef.Profile.IsChanged = true
 	userRef.Profile.Addresses[0].Attn = "mailing1"
@@ -104,6 +116,6 @@ func TestUserRepo(t *testing.T) {
 		Convey("The Error Should be Nil", func() {
 			So(err, ShouldBeNil)
 		})
-	})
+	})*/
 }
 
