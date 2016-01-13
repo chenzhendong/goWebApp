@@ -10,13 +10,31 @@ func TestUserRepo(t *testing.T) {
 
 	db := models.DB
 
-	user := models.UserLogin{Email:"abc@mail.com", Profile: models.UserProfile{FirstName: "John", Addresses: []models.Address{{AddressLine1: "123 main st"},{AddressLine1: "456 wall st"}}}}
-	db.Create(&user)
-	fmt.Println(user)
+	writeUser := models.UserLogin{Email:"abc@mail.com", Profile: models.UserProfile{FirstName: "John", Addresses: []models.Address{{AddressLine1: "123 main st"},{AddressLine1: "456 wall st"}}}}
+	db.Create(&writeUser)
+	fmt.Println(writeUser)
+	readUser := models.UserLogin{ID: writeUser.ID}
+	db.First(&readUser)
+	fmt.Println("Read User After Insert: ", readUser)
 
 	Convey("Subject: Test Insert User\n", t, func() {
 		Convey("User ID return Should Larger than 0", func() {
-			So(user.ID, ShouldBeGreaterThan, 0)
+			So(readUser.ID, ShouldBeGreaterThan, 0)
+		})
+	})
+
+	writeUser.Profile.Addresses[0].Attn = "mailling"
+
+	db.Updates(writeUser)
+
+	readUser = models.UserLogin{ID: writeUser.ID}
+	db.First(&readUser)
+
+	fmt.Println("Read User After Update:", readUser)
+
+	Convey("Subject: Test Update User\n", t, func() {
+		Convey("Address 0 Attn should return 'mailing'", func() {
+			//So(readUser.Profile.Addresses[0].Attn, ShouldEqual, "mailing")
 		})
 	})
 

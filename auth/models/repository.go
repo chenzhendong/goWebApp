@@ -1,8 +1,39 @@
 package models
 import (
-
+	"github.com/golang/groupcache/lru"
+	"strconv"
 )
 
+type Repository struct {
+
+}
+
+var cache *lru.Cache
+
+func init()  {
+	cache = lru.New(1000)
+}
+
+func getRepositoryId(user *UserLogin) string {
+	if user.ID > 0 {
+		return "UserLogin::" + strconv.FormatInt(user.ID, 19)
+	} else {
+		return ""
+	}
+}
+
+func (repo Repository) Get (user *UserLogin){
+	key := getRepositoryId(user)
+	value, ok := cache.Get(key)
+
+	if ok {
+		v,_ := value.(UserLogin)
+		user = &v
+	} else {
+
+	}
+
+}
 
 
 /*type UserRepo struct {
