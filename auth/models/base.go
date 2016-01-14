@@ -26,9 +26,9 @@ func init() {
 	db.DB().SetMaxOpenConns(100)
 	db.SingularTable(true)
 
-	db.DropTableIfExists(&UserLogin{}, &UserProfile{}, &Address{})
-	db.CreateTable(&UserLogin{}, &UserProfile{}, &Address{})
-	db.LogMode(true)
+	db.DropTableIfExists(&User{}, &Profile{}, &Address{})
+	db.CreateTable(&User{}, &Profile{}, &Address{})
+	//db.LogMode(true)
 
 	DB = db
 }

@@ -9,32 +9,49 @@ import (
 func TestUserRepo(t *testing.T) {
 
 	db := models.DB
+	repo := models.Repository{}
 
-	writeUser := models.UserLogin{Email:"abc@mail.com", Profile: models.UserProfile{FirstName: "John", Addresses: []models.Address{{AddressLine1: "123 main st"},{AddressLine1: "456 wall st"}}}}
+	writeUser := models.User{Email:"abc@mail.com", Profile: models.Profile{FirstName: "John", Addresses: []models.Address{{AddressLine1: "123 main st"},{AddressLine1: "456 wall st"}}}}
 	db.Create(&writeUser)
-	fmt.Println(writeUser)
-	readUser := models.UserLogin{ID: writeUser.ID}
-	db.First(&readUser)
+	fmt.Println("Origin Record Before Insert: ", writeUser)
+	readUser := repo.Get(writeUser.ID)
 	fmt.Println("Read User After Insert: ", readUser)
 
 	Convey("Subject: Test Insert User\n", t, func() {
 		Convey("User ID return Should Larger than 0", func() {
 			So(readUser.ID, ShouldBeGreaterThan, 0)
 		})
+		Convey("Profile ID return Should Larger than 0", func() {
+			So(readUser.Profile.ID, ShouldBeGreaterThan, 0)
+		})
+		Convey("Two Addresses ID return Should Larger than 0", func() {
+			So(readUser.Profile.Addresses[0].ID, ShouldBeGreaterThan, 0)
+			So(readUser.Profile.Addresses[1].ID, ShouldBeGreaterThan, 0)
+		})
 	})
 
-	writeUser.Profile.Addresses[0].Attn = "mailling"
+	writeUser = readUser
+	writeUser.Profile.Addresses[0].Attn = "mailing"
+	writeUser.Profile.Addresses[1].Attn = "billing"
+	readUser = repo.Get(writeUser.ID)
 
-	db.Updates(writeUser)
+	Convey("Subject: Make sure return objects from cache are cloned copies, not the same one in the cache\n", t, func() {
+		Convey("Addresses Attn should return empty string or nil", func() {
+			So(readUser.Profile.Addresses[0].Attn, ShouldEqual, "")
+			So(readUser.Profile.Addresses[1].Attn, ShouldEqual, "")
+		})
+	})
 
-	readUser = models.UserLogin{ID: writeUser.ID}
-	db.First(&readUser)
+
+	repo.Save(&writeUser)
+	readUser = repo.Get(writeUser.ID)
 
 	fmt.Println("Read User After Update:", readUser)
 
 	Convey("Subject: Test Update User\n", t, func() {
-		Convey("Address 0 Attn should return 'mailing'", func() {
-			//So(readUser.Profile.Addresses[0].Attn, ShouldEqual, "mailing")
+		Convey("Address 0 Attn should return 'mailing' and 'billing'", func() {
+			So(readUser.Profile.Addresses[0].Attn, ShouldEqual, "mailing")
+			So(readUser.Profile.Addresses[1].Attn, ShouldEqual, "billing")
 		})
 	})
 
