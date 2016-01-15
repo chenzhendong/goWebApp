@@ -3,6 +3,7 @@ import (
 	"github.com/golang/groupcache/lru"
 	"strconv"
 	"github.com/jinzhu/gorm"
+	"fmt"
 )
 
 type Repository struct {
@@ -17,7 +18,7 @@ func init()  {
 
 func getRepositoryId(user User) string {
 	if user.ID > 0 {
-		return "User::" + strconv.FormatUint(user.ID, 10)
+		return "User::" + strconv.FormatUint(user.ID, 19)
 	} else {
 		return ""
 	}
@@ -47,23 +48,41 @@ func (repo Repository) GetAll () []User {
 	return users
 }
 
-func (repo Repository) Save(changedUserRef *User)  {
-	key := getRepositoryId(*changedUserRef)
-
-	DB.Save(changedUserRef)
-	profileRef := &changedUserRef.Profile
-	DB.Save(profileRef)
-	addresses := profileRef.Addresses
-	for _, address := range addresses {
-		DB.Save(&address)
+func (repo Repository) saveOneUser(userRef *User)  {
+	if userRef.ID > 0 {
+		DB.Save(userRef)
+		profileRef := &userRef.Profile
+		DB.Save(profileRef)
+		addresses := profileRef.Addresses
+		for _, address := range addresses {
+			DB.Save(&address)
+		}
+	} else {
+		DB.Create(userRef)
 	}
+
 	cacheUser := User{}
-	cacheUser = *changedUserRef
+	cacheUser = *userRef
+	key := getRepositoryId(*userRef)
 	cache.Add(key, cacheUser)
 }
 
-func (repo Repository) FindAll(db gorm.DB) []User {
-	var users = make([]User, 30)
+func (repo Repository) Save(u interface{})  {
+	switch u.(type) {
+	case User:
+		user := u.(User)
+		repo.saveOneUser(&user)
+	case []User:
+		users := u.([]User)
+		for _, user := range users {
+			repo.saveOneUser(&user)
+		}
+		fmt.Println(users)
+	}
+}
+
+func (repo Repository) FindAll(db *gorm.DB) []User {
+	var users = make([]User, 0)
 	db.Find(&users)
 
 	for _, user := range users {
@@ -73,9 +92,14 @@ func (repo Repository) FindAll(db gorm.DB) []User {
 	return users
 }
 
-func (repo Repository) FindOne(db gorm.DB) User {
+func (repo Repository) FindOne(db *gorm.DB) User {
 	var user = User{}
 	db.First(&user)
 	user = repo.Get(user.ID)
 	return user
+}
+
+func (repo Repository) GetQueryBuilder() *gorm.DB  {
+	dbRef := DB.Model(&User{})
+	return dbRef
 }

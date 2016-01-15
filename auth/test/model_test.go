@@ -8,12 +8,11 @@ import (
 
 func TestUserRepo(t *testing.T) {
 
-	db := models.DB
 	repo := models.Repository{}
 
 	writeUser := models.User{Email:"abc@mail.com", Profile: models.Profile{FirstName: "John", Addresses: []models.Address{{AddressLine1: "123 main st"},{AddressLine1: "456 wall st"}}}}
-	db.Create(&writeUser)
 	fmt.Println("Origin Record Before Insert: ", writeUser)
+	repo.Save(writeUser)
 	readUser := repo.Get(writeUser.ID)
 	fmt.Println("Read User After Insert: ", readUser)
 
@@ -43,7 +42,7 @@ func TestUserRepo(t *testing.T) {
 	})
 
 
-	repo.Save(&writeUser)
+	repo.Save(writeUser)
 	readUser = repo.Get(writeUser.ID)
 
 	fmt.Println("Read User After Update:", readUser)
@@ -55,102 +54,24 @@ func TestUserRepo(t *testing.T) {
 		})
 	})
 
-	/*fmt.Println("Start testing ....")
-	userRepo := models.NewUserRepo()
-	userRef := userRepo.NewEntry()
-	userRef.Email = "abc@mail.com"
-	mailingAddress := models.Address{AddressType: models.MAILING_ADDRESS}
-	billingAddress := models.Address{AddressType: models.BILLING_ADDRESS}
-	userRef.Profile.Addresses = append(userRef.Profile.Addresses, &mailingAddress)
-	userRef.Profile.Addresses = append(userRef.Profile.Addresses, &billingAddress)
-	userRef.Profile.FirstName = "John"
-	userRef.Profile.Addresses[0].Attn = "mailing"
-	userRef.Profile.Addresses[1].Attn = "billing"
+	userSlice := make([]models.User, 0)
+	writeUser = models.User{Email:"def@mail.com", Profile: models.Profile{FirstName: "Jane", Addresses: []models.Address{{AddressLine1: "123 main st"},{AddressLine1: "456 wall st"}}}}
+	userSlice = append(userSlice, writeUser)
+	writeUser = models.User{Email:"fgh@mail.com", Profile: models.Profile{FirstName: "Sam", Addresses: []models.Address{{AddressLine1: "133 main st"},{AddressLine1: "436 wall st"}}}}
+	userSlice = append(userSlice, writeUser)
+	repo.Save(userSlice)
 
-	err := userRepo.Save()
+	builder := repo.GetQueryBuilder()
+	userSlice = repo.FindAll(builder)
 
-	Convey("Subject: Test Insert User\n", t, func() {
-		Convey("User ID return Should Larger than 0", func() {
-			So(userRef.Id, ShouldBeGreaterThan, 0)
-		})
-		Convey("The Error Should be Nil", func() {
-			So(err, ShouldBeNil)
+	Convey("Subject: Test Batch Insert User\n", t, func() {
+		Convey("All User ID in Slice Should Larger than 0", func() {
+			So(userSlice[0].ID, ShouldBeGreaterThan, 0)
+			So(userSlice[1].ID, ShouldBeGreaterThan, 0)
+			So(userSlice[2].ID, ShouldBeGreaterThan, 0)
 		})
 	})
 
 
-	userRepo = models.NewUserRepo()
-	qb := userRepo.QueryBuilder()
-	err = userRepo.Get(qb)
-	userRef = userRepo.QueryEntries[1]
-
-	Convey("Subject: Test Read User\n", t, func() {
-		Convey("User Email should display", func() {
-			So(userRef.Email, ShouldEqual, "abc@mail.com")
-		})
-		Convey("User Profile first name should match", func() {
-			So(userRef.Profile.FirstName, ShouldEqual, "John")
-		})
-		Convey("Address 1 Attn should match", func() {
-			So(userRef.Profile.Addresses[0].Attn, ShouldEqual, "mailing")
-		})
-		Convey("Address 2 Attn should match", func() {
-			So(userRef.Profile.Addresses[1].Attn, ShouldEqual, "billing")
-		})
-		Convey("The Error Should be Nil", func() {
-			So(err, ShouldBeNil)
-		})
-	})
-
-
-	userRef.Email = "abc1@mail.com"
-	userRef.Profile.FirstName = "John1"
-	userRef.Profile.IsChanged = true
-	userRef.Profile.Addresses[0].Attn = "mailing1"
-	userRef.Profile.Addresses[0].IsChanged = true
-	userRef.Profile.Addresses[1].Attn = "billing1"
-	userRef.Profile.Addresses[1].IsChanged = true
-	err = userRepo.Save()
-
-	Convey("Subject: Test Update User \n", t, func() {
-		Convey("User Email should display", func() {
-			So(userRef.Email, ShouldEqual, "abc1@mail.com")
-		})
-		Convey("User Profile first name should match", func() {
-			So(userRef.Profile.FirstName, ShouldEqual, "John1")
-		})
-		Convey("Address 1 Attn should match", func() {
-			So(userRef.Profile.Addresses[0].Attn, ShouldEqual, "mailing1")
-		})
-		Convey("Address 2 Attn should match", func() {
-			So(userRef.Profile.Addresses[1].Attn, ShouldEqual, "billing1")
-		})
-		Convey("The Error Should be Nil", func() {
-			So(err, ShouldBeNil)
-		})
-	})
-
-	userRepo = models.NewUserRepo()
-	qb = userRepo.QueryBuilder()
-	err = userRepo.Get(qb)
-	userRef = userRepo.QueryEntries[1]
-
-	Convey("Subject: Test Update User and Read Again\n", t, func() {
-		Convey("User Email should display", func() {
-			So(userRef.Email, ShouldEqual, "abc1@mail.com")
-		})
-		Convey("User Profile first name should match", func() {
-			So(userRef.Profile.FirstName, ShouldEqual, "John1")
-		})
-		Convey("Address 1 Attn should match", func() {
-			So(userRef.Profile.Addresses[0].Attn, ShouldEqual, "mailing1")
-		})
-		Convey("Address 2 Attn should match", func() {
-			So(userRef.Profile.Addresses[1].Attn, ShouldEqual, "billing1")
-		})
-		Convey("The Error Should be Nil", func() {
-			So(err, ShouldBeNil)
-		})
-	})*/
 }
 

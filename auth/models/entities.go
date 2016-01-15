@@ -26,8 +26,8 @@ type User struct {
 	UpdatedAt time.Time
 	DeletedAt *time.Time `sql:"index"`
 	Email string `sql:"not null;unique;index:idx_user_email" json:"email"`
-	UserName string `sql:"unique;index:idx_user_username"`
-	MobilePhone string `sql:"unique;index:idx_user_mobile" json:"mobile"`
+	UserName string `sql:"index:idx_user_username" json:"userName"`
+	MobilePhone string `sql:"index:idx_user_mobile" json:"mobile"`
 	Password string `json:"password"`
 	Status UserStatus `json:"status;default(0)"`
 	Profile Profile
