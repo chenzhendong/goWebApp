@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"../models"
+	"goWebApp/auth/models"
 	"encoding/json"
 	"github.com/astaxie/beego"
 )
@@ -11,6 +11,11 @@ type UserController struct {
 	beego.Controller
 }
 
+var repo = models.Repository{}
+
+func (c *UserController) URLMapping() {
+	c.Mapping("Post", c.Post)
+}
 
 // @Title createUser
 // @Description create users

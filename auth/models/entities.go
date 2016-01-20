@@ -29,7 +29,7 @@ type User struct {
 	UserName string `sql:"index:idx_user_username" json:"userName"`
 	MobilePhone string `sql:"index:idx_user_mobile" json:"mobile"`
 	Password string `json:"password"`
-	Status UserStatus `json:"status;default(0)"`
+	Status uint8 `json:"status;default(0)"`
 	Profile Profile
 }
 
@@ -62,6 +62,6 @@ type Address struct {
 	PostalCode string `json:"postalCode"`
 	Phone string `json:"phone"`
 	Country string `json:"country"`
-	AddressType AddressType `json:"addressType"`
+	AddressType uint8 `json:"addressType"`
 }
 

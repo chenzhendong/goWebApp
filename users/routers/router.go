@@ -8,7 +8,8 @@
 package routers
 
 import (
-	"goWebApp/auth/controllers"
+	"goWebApp/users/controllers"
+
 	"github.com/astaxie/beego"
 )
 
@@ -21,6 +22,17 @@ func init() {
 			),
 		),
 
+		beego.NSNamespace("/profile",
+			beego.NSInclude(
+				&controllers.ProfileController{},
+			),
+		),
+
+		beego.NSNamespace("/address",
+			beego.NSInclude(
+				&controllers.AddressController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }

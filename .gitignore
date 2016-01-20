@@ -1,2 +1,7 @@
 .idea
 *.iml
+*.tmp
+auth/auth
+auth.exe
+user/user
+user.exe

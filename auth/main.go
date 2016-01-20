@@ -1,16 +1,21 @@
 package main
 
 import (
-	_ "goWebApp/sample/docs"
-	_ "goWebApp/sample/routers"
-
+	_ "goWebApp/auth/docs"
+	_ "goWebApp/auth/routers"
 	"github.com/astaxie/beego"
+
 )
 
+func init() {
+
+}
+
 func main() {
-	if beego.RunMode == "dev" {
-		beego.DirectoryIndex = true
-		beego.StaticDir["/swagger"] = "swagger"
+	if beego.BConfig.RunMode == "dev" {
+		beego.BConfig.WebConfig.DirectoryIndex = true
+		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
 	}
 	beego.Run()
 }
+
