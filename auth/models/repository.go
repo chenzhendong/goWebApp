@@ -12,7 +12,8 @@ type Repository struct {
 
 var cache *lru.Cache
 
-func init()  {
+func init() {
+	fmt.Println("Init Repository of Users ....")
 	cache = lru.New(1000)
 }
 
@@ -24,82 +25,114 @@ func getRepositoryId(user User) string {
 	}
 }
 
-func (repo Repository) Get (id uint64) User{
+func clone(user User) User{
+	newUser := User{}
+	newUser = user
+	newUser.Profile.Addresses = append([]Address(nil), user.Profile.Addresses...)
+	return newUser
+}
+
+func (repo Repository) Get(id uint64) (User,error) {
+	db := DB
 	user := User{ID: id}
 	key := getRepositoryId(user)
 	value, ok := cache.Get(key)
 
 	if ok {
-		v,_ := value.(User)
-		user = v
+		v, _ := value.(User)
+		user = clone(v)
 	} else {
-		DB.First(&user)
-		profileRef := &user.Profile
-		DB.Model(&user).Related(profileRef, "Profile").First(profileRef)
-		addressesRef := &profileRef.Addresses
-		DB.Model(profileRef).Related(addressesRef).Find(addressesRef)
+		db = db.First(&user)
+		if db.Error != nil {
+			return user, db.Error
+		} else {
+			profileRef := &user.Profile
+			db = db.Model(&user).Related(profileRef, "Profile").First(profileRef)
+			addressesRef := &profileRef.Addresses
+			db = db.Model(profileRef).Related(addressesRef).Find(addressesRef)
+			cache.Add(key, clone(user))
+		}
 	}
-	return user
+	return user, nil
 }
 
-func (repo Repository) GetAll () []User {
+func (repo Repository) GetAll() []User {
 	var users = []User{}
 	DB.Model(&User{}).Find(&users)
 	return users
 }
 
-func (repo Repository) saveOneUser(userRef *User)  {
+func (repo Repository) saveOneUser(userRef *User, db *gorm.DB) error {
 	if userRef.ID > 0 {
-		DB.Save(userRef)
+		db = db.Save(userRef)
 		profileRef := &userRef.Profile
-		DB.Save(profileRef)
+		db = db.Save(profileRef)
 		addresses := profileRef.Addresses
 		for _, address := range addresses {
-			DB.Save(&address)
+			db = db.Save(&address)
 		}
 	} else {
-		DB.Create(userRef)
+		db = db.Create(userRef)
 	}
 
-	cacheUser := User{}
-	cacheUser = *userRef
-	key := getRepositoryId(*userRef)
-	cache.Add(key, cacheUser)
-}
-
-func (repo Repository) Save(u interface{})  {
-	switch u.(type) {
-	case User:
-		user := u.(User)
-		repo.saveOneUser(&user)
-	case []User:
-		users := u.([]User)
-		for _, user := range users {
-			repo.saveOneUser(&user)
-		}
-		fmt.Println(users)
+	if( db.Error != nil){
+		return db.Error
+	} else {
+		cacheUser := clone(*userRef)
+		key := getRepositoryId(cacheUser)
+		cache.Add(key, cacheUser)
+		return nil
 	}
 }
 
-func (repo Repository) FindAll(db *gorm.DB) []User {
-	var users = make([]User, 0)
-	db.Find(&users)
 
+func (repo Repository) SaveUser(user User) (User, error) {
+	tx := DB.Begin()
+	if err:=repo.saveOneUser(&user, tx); err != nil {
+		tx.Rollback()
+		return user, err
+	} else {
+		tx.Commit()
+		return user, nil
+	}
+}
+
+func (repo Repository) SaveUsers(users []User) ([]User, error) {
+	tx := DB.Begin()
 	for _, user := range users {
-		user = repo.Get(user.ID)
+		if err:=repo.saveOneUser(&user, tx); err != nil {
+			tx.Rollback()
+			return nil, err
+		}
 	}
+	tx.Commit()
+	return users, nil
+}
 
-	return users
+
+
+func (repo Repository) FindAll(db *gorm.DB) ([]User, error) {
+	var users = make([]User, 0)
+	db = db.Find(&users)
+
+	if db.Error != nil {
+		return users, db.Error
+	} else {
+		for idx, user := range users {
+			users[idx], _ = repo.Get(user.ID)
+		}
+		return users, nil
+	}
 }
 
 func (repo Repository) FindOne(db *gorm.DB) User {
 	var user = User{}
 	db.First(&user)
-	user = repo.Get(user.ID)
+	user,_ = repo.Get(user.ID)
 	return user
 }
 
-func (repo Repository) GetQueryBuilder() *gorm.DB  {
+func (repo Repository) GetQueryBuilder() *gorm.DB {
 	dbRef := DB.Model(&User{})
 	return dbRef
 }

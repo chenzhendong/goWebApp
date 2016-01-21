@@ -13,4 +13,18 @@ func init() {
 			[]string{"post"},
 			nil})
 
+	beego.GlobalControllerRouter["goWebApp/auth/controllers:UserController"] = append(beego.GlobalControllerRouter["goWebApp/auth/controllers:UserController"],
+		beego.ControllerComments{
+			"GetOne",
+			`/:id`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["goWebApp/auth/controllers:UserController"] = append(beego.GlobalControllerRouter["goWebApp/auth/controllers:UserController"],
+		beego.ControllerComments{
+			"GetAll",
+			`/`,
+			[]string{"get"},
+			nil})
+
 }

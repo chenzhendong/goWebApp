@@ -7,7 +7,8 @@ import (
 	"log"
 )
 
-var DB gorm.DB
+var DB *gorm.DB
+var RepoInstance Repository
 
 func init() {
 	DB = initPostgres()
@@ -18,18 +19,19 @@ func init() {
 
 	DB.DropTableIfExists(new(User), new(Profile), new(Address))
 	DB.CreateTable(new(User), new(Profile), new(Address))
-	DB.LogMode(true)
+	//DB.LogMode(true)
+	RepoInstance = Repository{}
 }
 
-func initSqlite() gorm.DB  {
+func initSqlite() *gorm.DB  {
 	db, err := gorm.Open("sqlite3", ":memory:")
 	if err != nil {
 		log.Fatal("Failed to connect to Sqlite DB.", err)
 	}
-	return db
+	return &db
 }
 
-func initPostgres()  gorm.DB {
+func initPostgres()  *gorm.DB {
 
 	dbhost := "localhost"
 	dbport := "5432"
@@ -45,6 +47,6 @@ func initPostgres()  gorm.DB {
 		log.Fatal("Failed to connect to Postgres DB.", err)
 	}
 
-	return db
+	return &db
 }
 
