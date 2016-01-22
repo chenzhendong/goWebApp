@@ -39,7 +39,6 @@ type Profile struct {
 	UpdatedAt time.Time
 	DeletedAt *time.Time `sql:"index"`
 	Addresses []Address `json:"addresses"`
-	AddressID int64
 	FirstName string `json:"firstName"`
 	LastName string `json:"lastName"`
 	MiddleName string `json:"middleName"`

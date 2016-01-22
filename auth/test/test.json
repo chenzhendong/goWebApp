@@ -1,0 +1,17 @@
+{
+  "email": "abc@mail.com",
+  "Profile": {
+    "firstName": "John",
+    "lastName": "Smith",
+    "Addresses": [
+      {
+        "attn": "mailing",
+        "addressLine1":"123 main st"
+      },
+      {
+        "attn": "billing",
+        "addressLine1":"123 wall st"
+      }
+    ]
+  }
+}
