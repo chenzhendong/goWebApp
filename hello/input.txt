@@ -1,0 +1,22 @@
+14 7
+{
+"firstName": "John",
+"lastName": "Smith",
+"isAlive": true,
+"age": 25,
+"heightCm": "167.64",
+"address": {
+"streetAddress": "21 2nd Street",
+"city": "New York",
+"state": "NY",
+"postalCode": "10021-3100",
+"phone": null
+}
+}
+firstName
+address.city
+gender
+age
+isAlive
+address.nation
+address.phone
