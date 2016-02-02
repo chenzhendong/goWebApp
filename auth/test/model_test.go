@@ -66,7 +66,7 @@ func TestUserRepo(t *testing.T) {
 	repo.SaveUsers(userSlice)
 
 	builder := repo.GetQueryBuilder()
-	userSlice = repo.FindAll(builder)
+	userSlice,_ = repo.FindAll(builder)
 
 	Convey("Subject: Test Batch Insert User\n", t, func() {
 		Convey("All User ID in Slice Should Larger than 0", func() {

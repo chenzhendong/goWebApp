@@ -5,3 +5,6 @@ auth/auth
 auth.exe
 user/user
 user.exe
+commentsRouter*.go
+docs.go
+swagger/s
