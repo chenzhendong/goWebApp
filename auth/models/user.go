@@ -1,5 +1,6 @@
 package models
 import (
+	"time"
 	"github.com/golang/groupcache/lru"
 	"strconv"
 	"github.com/jinzhu/gorm"
@@ -16,6 +17,68 @@ func init() {
 	fmt.Println("Init Repository of Users ....")
 	cache = lru.New(1000)
 }
+
+type UserStatus int8
+const(
+	UNDEFINED_STATUS UserStatus = 0
+	NEW_STATUS UserStatus = 1
+	PENDING_STATUS UserStatus = 2
+	ACTIVE_STATUS UserStatus = 3
+	INACTIVE_STATUS UserStatus = 4
+)
+
+type AddressType int8
+const(
+	UNDEFINED_ADDRESS AddressType = 0
+	MAILING_ADDRESS AddressType = 1
+	BILLING_ADDRESS AddressType = 2
+)
+
+
+type User struct {
+	ID        uint64 `gorm:"primary_key"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time `sql:"index"`
+	Email string `sql:"not null;unique;index:idx_user_email" json:"email" required:"true" description:"Email Address As UserName"`
+	UserName string `sql:"index:idx_user_username" json:"userName"`
+	MobilePhone string `sql:"index:idx_user_mobile" json:"mobile"`
+	Password string `json:"password"`
+	Status uint8 `json:"status;default(0)"`
+	Profile Profile
+}
+
+type Profile struct {
+	ID        uint64 `gorm:"primary_key"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time `sql:"index"`
+	Addresses []Address `json:"addresses"`
+	FirstName string `json:"firstName"`
+	LastName string `json:"lastName"`
+	MiddleName string `json:"middleName"`
+	BirthDate time.Time `json:"birthDate"`
+	Phone string `json:"phone"`
+	UserID int64
+}
+
+type Address struct {
+	ID        uint64 `gorm:"primary_key"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time `sql:"index"`
+	ProfileID int64 `json:"profileId"`
+	Attn string  `json:"attn"`
+	AddressLine1 string `json:"addressLine1"`
+	AddressLine2 string `json:"addressLine2"`
+	City string `json:"city"`
+	StateProvince string `json:"stateProvince"`
+	PostalCode string `json:"postalCode"`
+	Phone string `json:"phone"`
+	Country string `json:"country"`
+	AddressType uint8 `json:"addressType"`
+}
+
 
 func getRepositoryId(user User) string {
 	if user.ID > 0 {
@@ -136,3 +199,5 @@ func (repo Repository) GetQueryBuilder() *gorm.DB {
 	dbRef := DB.Model(&User{})
 	return dbRef
 }
+
+

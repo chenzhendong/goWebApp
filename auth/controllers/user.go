@@ -28,7 +28,7 @@ func (u *UserController) handleError(code int, err error)  {
 	u.Data["json"] = err.Error()
 }
 
-// @Title createUser
+// @Title Create A User
 // @Description Create a new users
 // @Param	body		body 	models.User	true		"body for user content"
 // @Success 200 {object} models.User
@@ -49,7 +49,7 @@ func (u *UserController) Post() {
 	u.ServeJSON()
 }
 
-// @Title Get Single User
+// @Title Get A User
 // @Description Get a User by ID
 // @Param	id		path 	string	true		"The key for staticblock"
 // @Success 200 {object} models.User
@@ -68,8 +68,8 @@ func (u *UserController) GetOne() {
 	u.ServeJSON()
 }
 
-// @Title GetAll
-// @Description Get All Users
+// @Title Get All Users
+// @Description Get All Users By default 20 records
 // @Param	sortby	query	string	false	"Sorted-by fields. e.g. col1,col2 ..."
 // @Param	order	query	string	false	"Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ..."
 // @Param	limit	query	string	false	"Limit the size of result set. Must be an integer"
@@ -83,6 +83,8 @@ func (c *UserController) GetAll() {
 	var order []string
 	var limit int64 = 20
 	var offset int64 = 0
+	sortby = []string{"ID"}
+	order = []string{"desc"}
 
 	db := repo.GetQueryBuilder()
 
@@ -122,8 +124,8 @@ func (c *UserController) GetAll() {
 	c.ServeJSON()
 }
 
-// @Title Update
-// @Description Update the User
+// @Title Update A User
+// @Description Update a user
 // @Param	id		path 	string	true		"The id you want to update"
 // @Param	body		body 	models.User	true		"body for User content"
 // @Success 200 {object} models.User
