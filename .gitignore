@@ -8,3 +8,4 @@ user.exe
 commentsRouter*.go
 docs.go
 swagger/
+node_modules/
